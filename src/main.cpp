@@ -8,12 +8,18 @@ float rand_f(float min, float max)
     return ((float)(std::rand() % (int)((max - min) * precision)) / precision) + min;
 }
 
-class Character : public sf::CircleShape
+class Character : public sf::Sprite
 {
 public:
-    Character()
-        : velocity{sf::Vector2f(0, 0)}
+    Character(sf::Texture &texture)
+        : Sprite(texture)
     {
+        auto size = texture.getSize().x / 2.f;
+
+        // Make the origin the center of the texture
+        this->setOrigin(sf::Vector2f(size, size));
+
+        this->setScale(sf::Vector2f(0.25f, 0.25f));
     }
 
     void accelerate(sf::Vector2f thrust)
@@ -26,34 +32,26 @@ public:
         this->move(velocity * elapsed);
     }
 
-    bool collide(const sf::CircleShape &circle2)
+    bool collide(const Character &char2)
     {
-        auto &circle1 = (*this);
+        auto &char1 = (*this);
 
-        auto relative = circle1.getPosition() - circle2.getPosition();
+        auto b1 = char1.getGlobalBounds();
+        auto b2 = char2.getGlobalBounds();
 
-        auto distance = sqrtf(powf(relative.x, 2.f) + powf(relative.y, 2.f));
-
-        auto radius_sum = circle1.getRadius() + circle2.getRadius();
-
-        return distance < radius_sum;
+        return b1.findIntersection(b2).has_value();
     }
 
 protected:
     sf::Vector2f velocity;
+    float _radius;
 };
 
 class Player : public Character
 {
 public:
-    Player() : Character()
+    Player(sf::Texture &texture) : Character(texture)
     {
-        this->setRadius(40.f);
-        this->setPointCount(100);
-        this->setFillColor(sf::Color::Blue);
-
-        // Make the origin the center of the circle
-        this->setOrigin(sf::Vector2f(this->getRadius(), this->getRadius()));
     }
 
     void reset(sf::Vector2u size)
@@ -65,14 +63,8 @@ public:
 class Enemy : public Character
 {
 public:
-    Enemy() : Character()
+    Enemy(sf::Texture &texture) : Character(texture)
     {
-        this->setRadius(20.f);
-        this->setPointCount(6);
-        this->setFillColor(sf::Color::Red);
-
-        // Make the origin the center of the circle
-        this->setOrigin(sf::Vector2f(this->getRadius(), this->getRadius()));
     }
 
     void randomise(sf::Vector2u size)
@@ -94,13 +86,16 @@ int main()
     auto window = sf::RenderWindow(video_mode, "CMake SFML Project");
     window.setFramerateLimit(60);
 
+    auto texture = sf::Texture(sf::Image("spaceship.png"));
+    texture.setSmooth(true);
+
     sf::Clock clock;
 
-    auto player = Player();
+    auto player = Player(texture);
 
     player.reset(video_mode.size);
 
-    std::vector<Enemy> enemies(20);
+    std::vector<Enemy> enemies(20, Enemy(texture));
 
     for (auto &enemy : enemies)
     {
