@@ -12,5 +12,11 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp)
+file(GLOB SOURCES
+    src/*.hpp
+    src/*.cpp
+)
+
+add_executable(main ${SOURCES})
+
 target_link_libraries(main PRIVATE SFML::Graphics)
