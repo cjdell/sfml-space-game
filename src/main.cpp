@@ -39,7 +39,7 @@ int main()
 
     player.reset(video_mode.size);
 
-    std::vector<Enemy> enemies(20, Enemy("mine"));
+    std::vector<Enemy> enemies(50, Enemy("mine"));
 
     for (auto &enemy : enemies)
     {
@@ -114,6 +114,21 @@ int main()
 
                 player.setVelocity(player_vel);
                 enemy.setVelocity(enemy_vel);
+            }
+
+            for (auto &enemy_inner : enemies)
+            {
+                if (enemy_inner.collide(enemy))
+                {
+                    auto enemy_inner_vel = enemy_inner.getVelocity();
+                    auto enemy_vel = enemy.getVelocity();
+
+                    calculateBounce(enemy_inner.getPosition(), enemy_inner_vel,
+                                    enemy.getPosition(), enemy_vel);
+
+                    enemy_inner.setVelocity(enemy_inner_vel);
+                    enemy.setVelocity(enemy_vel);
+                }
             }
         }
 
