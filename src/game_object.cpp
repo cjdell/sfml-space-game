@@ -101,8 +101,15 @@ void Player::reset(sf::Vector2u size)
     this->_angular_velocity = sf::Angle::Zero;
 }
 
-void Player::fireTorpedo(TorpedoManager &torpedoManager)
+void Player::fireTorpedo(TorpedoManager &torpedoManager, float time)
 {
+    if (this->_last_torpedo_time > time - TORPEDO_INTERVAL)
+    {
+        return;
+    }
+
+    this->_last_torpedo_time = time;
+
     auto direction = sf::Vector2f(0.f, -300.f).rotatedBy(this->getRotation());
 
     torpedoManager.fire(this->getPosition(), this->getRotation(), direction);

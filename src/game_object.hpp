@@ -33,6 +33,8 @@ protected:
     sf::Angle _angular_velocity;
 };
 
+const float TORPEDO_INTERVAL = 0.5f;
+
 class Player : public GameObject
 {
 public:
@@ -40,7 +42,10 @@ public:
 
     void reset(sf::Vector2u size);
 
-    void fireTorpedo(TorpedoManager &torpedoManager);
+    void fireTorpedo(TorpedoManager &torpedoManager, float time);
+
+private:
+    float _last_torpedo_time = 0.f;
 };
 
 class Enemy : public GameObject

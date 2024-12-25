@@ -5,7 +5,7 @@
 #include "resources.hpp"
 #include "game_object.hpp"
 
-const auto ACCEL = 1000.0f;
+const auto ACCEL = 250.0f;
 const auto ROTATE_ACCEL = 5.0f;
 
 int main()
@@ -31,6 +31,7 @@ int main()
     window.setFramerateLimit(60);
 
     sf::Clock clock;
+    auto time = 0.f;
 
     TorpedoManager torpedoManager;
 
@@ -49,6 +50,7 @@ int main()
     {
         // Get the time between frames
         auto elapsed = clock.restart().asSeconds();
+        time += elapsed;
 
         while (const auto event = window.pollEvent())
         {
@@ -79,11 +81,15 @@ int main()
             {
                 player.accelerate(sf::Vector2f(0, -elapsed * ACCEL));
             }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+            {
+                player.reset(video_mode.size);
+            }
 
             // Fire torpedo via player
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
             {
-                player.fireTorpedo(torpedoManager);
+                player.fireTorpedo(torpedoManager, time);
             }
         }
 
