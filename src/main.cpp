@@ -104,7 +104,16 @@ int main()
 
             if (player.collide(enemy))
             {
-                player.reset(video_mode.size);
+                // player.reset(video_mode.size);
+
+                auto player_vel = player.getVelocity();
+                auto enemy_vel = enemy.getVelocity();
+
+                calculateBounce(player.getPosition(), player_vel,
+                                enemy.getPosition(), enemy_vel);
+
+                player.setVelocity(player_vel);
+                enemy.setVelocity(enemy_vel);
             }
         }
 

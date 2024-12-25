@@ -23,6 +23,9 @@ public:
 
     bool collide(const GameObject &other) const;
 
+    inline sf::Vector2f getVelocity() { return this->_velocity; }
+    inline void setVelocity(sf::Vector2f velocity) { this->_velocity = velocity; }
+
 protected:
     sf::Image _image;
 
